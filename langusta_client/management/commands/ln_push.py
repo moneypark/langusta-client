@@ -24,11 +24,15 @@ class Command(BaseCommand):
         ),
         make_option(
             "-D", "--dry-run", action="store_true", dest="dry_run", default=False
-        )
+        ),
+        make_option(
+            "-t", "--tag", action="store", type="string", dest="tag", default='master'
+        ),
     )
 
     def handle(self, *args, **options):
         self.debug = bool(options.get('dry_run'))
+        self.env_tag = options.get('tag', '')
         self.upload_translation_file()
 
     @property
@@ -52,18 +56,19 @@ class Command(BaseCommand):
                 raise NoPoFilesFound(
                      'Could not find any .po files in %r' % (source_folder)
                 )
-        print files
+        print 'Translations found:\n', '\n'.join(files)
 
         for _filePath in files:
             filePath, domain = os.path.split(_filePath)
             language = filePath.split('/')[-2]
-            print language
+            print 'Uploading, language: {}, domain: {}'.format(language,
+                                                               domain)
 
             content = open(_filePath, 'r').read()
             data = {
                 'project_slug': app_settings.LANGUSTA['PROJECT_SLUG'],
                 'content': content,
-                'tags': app_settings.LANGUSTA['TAGS'],
+                'tags': [self.env_tag],
                 'domain': domain,
                 'language': language
             }
@@ -78,5 +83,4 @@ class Command(BaseCommand):
                     self.url,
                     data=json.dumps(data), headers=headers
                 )
-                print response.json()
-
+                response.raise_for_status()
