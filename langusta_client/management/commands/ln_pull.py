@@ -50,7 +50,10 @@ class Command(BaseCommand):
         po_file_path = os.path.join(po_file_dir, domain)
 
         po_file_url = self._url(lang, domain)
-        headers = {'Accept': 'text/po'}
+        headers = {
+            'Accept': 'text/po',
+            'Authorization': 'Token {}'.format(app_settings.LANGUSTA['AUTH_TOKEN'])
+        }
         po_response = requests.get(po_file_url, headers=headers)
         if po_response.status_code == 404:
             return
