@@ -1,14 +1,17 @@
 import os
 import glob
 import json
-from django.core.management.base import BaseCommand
 
 import requests
+from django.core.management.base import BaseCommand
+from django.utils.crypto import get_random_string
 
 from langusta_client import app_settings
 from langusta_client.exceptions import NoPoFilesFound
 
 from optparse import make_option
+
+IMPORT_ID_LENGTH = 40
 
 
 class Command(BaseCommand):
@@ -44,7 +47,6 @@ class Command(BaseCommand):
 
         )
 
-
     def upload_translation_file(self):
         files = []
         for lang in app_settings.LANGUSTA['LANGUAGES']:
@@ -54,9 +56,12 @@ class Command(BaseCommand):
             files += [filepath for filepath in glob.glob(source_folder + '/*.po')]
             if not files:
                 raise NoPoFilesFound(
-                     'Could not find any .po files in %r' % (source_folder)
+                     'Could not find any .po files in %r' % (source_folder,)
                 )
         print 'Translations found:\n', '\n'.join(files)
+
+        # Used to group all translations as one import event
+        langusta_import_id = get_random_string(IMPORT_ID_LENGTH)
 
         for _filePath in files:
             filePath, domain = os.path.split(_filePath)
@@ -70,7 +75,8 @@ class Command(BaseCommand):
                 'content': content,
                 'tags': [self.env_tag],
                 'domain': domain,
-                'language': language
+                'language': language,
+                'import_id': langusta_import_id,
             }
 
             headers = {
@@ -83,4 +89,9 @@ class Command(BaseCommand):
                     self.url,
                     data=json.dumps(data), headers=headers
                 )
-                response.raise_for_status()
+                try:
+                    response.raise_for_status()
+                except IOError:
+                    if response.headers.get('content-type') == 'application/json':
+                        print response.json()
+                    raise
