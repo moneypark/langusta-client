@@ -60,12 +60,12 @@ class Command(BaseCommand):
         po_response.raise_for_status()
 
         if self.debug:
-            print po_file_path
+            print(po_file_path)
             return
 
         with open(po_file_path, 'w') as po_fh:
             po_fh.write(po_response.text.encode("UTF-8"))
-            print 'Saved {}'.format(po_file_path)
+            print('Saved {}'.format(po_file_path))
 
     def download_translation_files(self):
         for lang in app_settings.LANGUSTA['LANGUAGES']:

@@ -1,4 +1,5 @@
 from django.conf import settings
+
 _LANGUSTA = {
     'SOURCE_PATH': settings.LOCALE_PATHS[0],
     'LANGUAGES': ['en', 'de'],
@@ -9,6 +10,6 @@ _LANGUSTA = {
     'TAGS': ['beta',]
 }
 
-LANGUSTA  = getattr(settings, 'LANGUSTA', _LANGUSTA)
+LANGUSTA = getattr(settings, 'LANGUSTA', _LANGUSTA)
 _LANGUSTA.update(LANGUSTA)
 LANGUSTA = _LANGUSTA

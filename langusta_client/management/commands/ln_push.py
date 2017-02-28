@@ -31,11 +31,15 @@ class Command(BaseCommand):
         make_option(
             "-t", "--tag", action="store", type="string", dest="tag", default='master'
         ),
+        make_option(
+            "-A", "--actualize", action="store_true", dest="actualize", default=False
+        )
     )
 
     def handle(self, *args, **options):
         self.debug = bool(options.get('dry_run'))
         self.env_tag = options.get('tag', '')
+        self.actualize = options.get('actualize')
         self.upload_translation_file()
 
     @property
@@ -58,7 +62,7 @@ class Command(BaseCommand):
                 raise NoPoFilesFound(
                      'Could not find any .po files in %r' % (source_folder,)
                 )
-        print 'Translations found:\n', '\n'.join(files)
+        print('Translations found:\n', '\n'.join(files))
 
         # Used to group all translations as one import event
         langusta_import_id = get_random_string(IMPORT_ID_LENGTH)
@@ -66,8 +70,8 @@ class Command(BaseCommand):
         for _filePath in files:
             filePath, domain = os.path.split(_filePath)
             language = filePath.split('/')[-2]
-            print 'Uploading, language: {}, domain: {}'.format(language,
-                                                               domain)
+            print('Uploading, language: {}, domain: {}'.format(language,
+                                                               domain))
 
             content = open(_filePath, 'r').read()
             data = {
@@ -77,6 +81,7 @@ class Command(BaseCommand):
                 'domain': domain,
                 'language': language,
                 'import_id': langusta_import_id,
+                'actualize': self.actualize,
             }
 
             headers = {
@@ -93,5 +98,5 @@ class Command(BaseCommand):
                     response.raise_for_status()
                 except IOError:
                     if response.headers.get('content-type') == 'application/json':
-                        print response.json()
+                        print(response.json())
                     raise
