@@ -16,7 +16,6 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'requests',
-    'polib',
 ]
 
 test_requirements = [
