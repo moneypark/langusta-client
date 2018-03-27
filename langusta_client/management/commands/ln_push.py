@@ -9,32 +9,31 @@ from django.utils.crypto import get_random_string
 from langusta_client import app_settings
 from langusta_client.exceptions import NoPoFilesFound
 
-from optparse import make_option
 
 IMPORT_ID_LENGTH = 40
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option(
-            "-H", "--host", action="store", type="string", dest="host"
-        ),
-        make_option(
-            "-W", "--auth-token", action="store", type="string", dest="token"
-        ),
-        make_option(
-            "-P", "--project-token", action="store", type="string", dest="project"
-        ),
-        make_option(
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "-H", "--host", action="store", type=str, dest="host"
+        )
+        parser.add_argument(
+            "-W", "--auth-token", action="store", type=str, dest="token"
+        )
+        parser.add_argument(
+            "-P", "--project-token", action="store", type=str, dest="project"
+        )
+        parser.add_argument(
             "-D", "--dry-run", action="store_true", dest="dry_run", default=False
-        ),
-        make_option(
-            "-t", "--tag", action="store", type="string", dest="tag", default='master'
-        ),
-        make_option(
+        )
+        parser.add_argument(
+            "-t", "--tag", action="store", type=str, dest="tag", default='master'
+        )
+        parser.add_argument(
             "-A", "--actualize", action="store_true", dest="actualize", default=False
         )
-    )
 
     def handle(self, *args, **options):
         self.debug = bool(options.get('dry_run'))

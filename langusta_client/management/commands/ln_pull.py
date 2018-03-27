@@ -1,5 +1,4 @@
 import os
-from optparse import make_option
 
 import requests
 from django.core.management.base import BaseCommand
@@ -7,19 +6,20 @@ from django.conf import settings
 
 from langusta_client import app_settings
 
-DOMAINS = ['django.po', 'djangojs.po']
+DOMAINS = ['django.po', 'djangojs.po', ]
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option(
+
+    def add_arguments(self, parser):
+
+        parser.add_argument(
             "-D", "--dry-run", action="store_true",
             dest="dry_run", default=False
-        ),
-        make_option(
-            "-o", "--output", action="store", type="string", dest="output"
-        ),
-    )
+        )
+        parser.add_argument(
+            "-o", "--output", action="store", type=str, dest="output"
+        )
 
     def handle(self, *args, **options):
         self.debug = bool(options.get('dry_run'))
@@ -40,7 +40,7 @@ class Command(BaseCommand):
             app_settings.LANGUSTA['PROJECT_SLUG'],
             app_settings.LANGUSTA['PROJECT_TOKEN'],
             lang,
-            domain,
+            domain
         )
 
     def _download_file(self, lang, domain):
