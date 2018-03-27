@@ -24,7 +24,7 @@ test_requirements = [
 
 setup(
     name='langusta_client',
-    version='0.1.0',
+    version='0.2.0',
     description="Django application to push/pull translations from Langusta service",
     long_description=readme + '\n\n' + history,
     author="Vasyl Dizhak",
