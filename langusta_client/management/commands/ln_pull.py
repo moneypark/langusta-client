@@ -64,7 +64,7 @@ class Command(BaseCommand):
             return
 
         with open(po_file_path, 'w') as po_fh:
-            po_fh.write(po_response.text.encode("UTF-8"))
+            po_fh.write(po_response.text)
             print('Saved {}'.format(po_file_path))
 
     def download_translation_files(self):
