@@ -40,6 +40,9 @@ class Command(BaseCommand):
         parser.add_argument(
             "-O", "--overwrite", action="store_true", dest='overwrite', default=False,
         )
+        parser.add_argument(
+            "-dr", "--drop-references", action="store_true", dest='drop_references_for_missing', default=False,
+        )
 
     def handle(self, *args, **options):
         self.debug = bool(options.get('dry_run'))
@@ -47,6 +50,7 @@ class Command(BaseCommand):
         self.actualize = options.get('actualize')
         self.append_references = options.get('append_references')
         self.overwrite = options.get('overwrite')
+        self.drop_references_for_missing = options.get('drop_references_for_missing')
         self.upload_translation_file()
 
     @property
@@ -91,6 +95,7 @@ class Command(BaseCommand):
                 'actualize': self.actualize,
                 'append_references': self.append_references,
                 'overwrite': self.overwrite,
+                'drop_references_for_missing': self.drop_references_for_missing,
             }
 
             headers = {
