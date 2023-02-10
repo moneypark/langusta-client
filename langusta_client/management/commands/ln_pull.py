@@ -27,7 +27,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.debug = bool(options.get('dry_run'))
-        self.timeout = options.get('timeout')
+        self.timeout = int(options.get('timeout', DEFAULT_TIMEOUT))
         self.output_dir = options.get('output')
         if not self.output_dir:
             self.output_dir = settings.LOCALE_PATHS[0]
@@ -59,7 +59,7 @@ class Command(BaseCommand):
             'Accept': 'text/po',
             'Authorization': 'Token {}'.format(app_settings.LANGUSTA['AUTH_TOKEN'])
         }
-        po_response = requests.get(po_file_url, headers=headers, timeout=self.timeout or DEFAULT_TIMEOUT)
+        po_response = requests.get(po_file_url, headers=headers, timeout=self.timeout)
         if po_response.status_code == 404:
             return
         po_response.raise_for_status()
