@@ -11,6 +11,7 @@ from langusta_client.exceptions import NoPoFilesFound
 
 
 IMPORT_ID_LENGTH = 40
+DEFAULT_TIMEOUT = 600
 
 
 class Command(BaseCommand):
@@ -43,6 +44,9 @@ class Command(BaseCommand):
         parser.add_argument(
             "-dr", "--drop-references", action="store_true", dest='drop_references_for_missing', default=False,
         )
+        parser.add_argument(
+            "-to", "--timeout", action="store", dest="timeout", default=DEFAULT_TIMEOUT,
+        )
 
     def handle(self, *args, **options):
         self.debug = bool(options.get('dry_run'))
@@ -51,6 +55,7 @@ class Command(BaseCommand):
         self.append_references = options.get('append_references')
         self.overwrite = options.get('overwrite')
         self.drop_references_for_missing = options.get('drop_references_for_missing')
+        self.timeout = options.get('timeout')
         self.upload_translation_file()
 
     @property
@@ -106,7 +111,9 @@ class Command(BaseCommand):
             if not self.debug:
                 response = requests.post(
                     self.url,
-                    data=json.dumps(data), headers=headers
+                    data=json.dumps(data),
+                    headers=headers,
+                    timeout=self.timeout or DEFAULT_TIMEOUT
                 )
                 try:
                     response.raise_for_status()

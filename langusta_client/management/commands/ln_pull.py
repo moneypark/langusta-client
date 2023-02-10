@@ -7,6 +7,7 @@ from django.conf import settings
 from langusta_client import app_settings
 
 DOMAINS = ['django.po', 'djangojs.po', ]
+DEFAULT_TIMEOUT = 600
 
 
 class Command(BaseCommand):
@@ -20,9 +21,13 @@ class Command(BaseCommand):
         parser.add_argument(
             "-o", "--output", action="store", type=str, dest="output"
         )
+        parser.add_argument(
+            "-to", "--timeout", action="store", dest="timeout", default=DEFAULT_TIMEOUT,
+        )
 
     def handle(self, *args, **options):
         self.debug = bool(options.get('dry_run'))
+        self.timeout = options.get('timeout')
         self.output_dir = options.get('output')
         if not self.output_dir:
             self.output_dir = settings.LOCALE_PATHS[0]
@@ -54,7 +59,7 @@ class Command(BaseCommand):
             'Accept': 'text/po',
             'Authorization': 'Token {}'.format(app_settings.LANGUSTA['AUTH_TOKEN'])
         }
-        po_response = requests.get(po_file_url, headers=headers)
+        po_response = requests.get(po_file_url, headers=headers, timeout=self.timeout or DEFAULT_TIMEOUT)
         if po_response.status_code == 404:
             return
         po_response.raise_for_status()
