@@ -55,7 +55,7 @@ class Command(BaseCommand):
         self.append_references = options.get('append_references')
         self.overwrite = options.get('overwrite')
         self.drop_references_for_missing = options.get('drop_references_for_missing')
-        self.timeout = options.get('timeout')
+        self.timeout = int(options.get('timeout', DEFAULT_TIMEOUT))
         self.upload_translation_file()
 
     @property
@@ -113,7 +113,7 @@ class Command(BaseCommand):
                     self.url,
                     data=json.dumps(data),
                     headers=headers,
-                    timeout=self.timeout or DEFAULT_TIMEOUT
+                    timeout=self.timeout
                 )
                 try:
                     response.raise_for_status()
