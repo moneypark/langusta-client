@@ -1,11 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup, find_packages
 
 
 with open('README.rst') as readme_file:
@@ -24,17 +19,13 @@ test_requirements = [
 
 setup(
     name='langusta_client',
-    version='0.3.2',
+    version='0.3.4',
     description="Django application to push/pull translations from Langusta service",
     long_description=readme + '\n\n' + history,
     author="Vasyl Dizhak",
     author_email='vasyl.dizhak@moneypark.com',
     url='https://github.com/rootart/langusta_client',
-    packages=[
-        'langusta_client',
-    ],
-    package_dir={'langusta_client':
-                 'langusta_client'},
+    packages=find_packages(include=['langusta_client', 'langusta_client.*']),
     include_package_data=True,
     install_requires=requirements,
     license="ISCL",
